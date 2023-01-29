@@ -39,31 +39,25 @@ describe("Exchange", () => {
       expect(await getBalance(exchange.address)).to.equal(toWei(100));
       expect(await exchange.getReserve()).to.equal(toWei(200));
     });
+  });
 
-    it("allows zero amounts", async () => {
-      await token.approve(exchange.address, 0);
-      await exchange.addLiquidity(0, { value: 0 });
+  describe("getTokenAmount", async () => {
+    it("returns correct token amount", async () => {
+      await token.approve(exchange.address, toWei(2000));
+      await exchange.addLiquidity(toWei(2000), { value: toWei(1000) });
 
-      expect(await getBalance(exchange.address)).to.equal(0);
-      expect(await exchange.getReserve()).to.equal(0);
+      let tokensOut = await exchange.getTokenAmount(toWei(1));
+      expect(fromWei(tokensOut)).to.equal("1.998001998001998001");
     });
   });
 
-  describe("getPrice", async () => {
-    it("returns correct prices", async () => {
+  describe("getEthAmount", async () => {
+    it("returns correct ether amount", async () => {
       await token.approve(exchange.address, toWei(2000));
       await exchange.addLiquidity(toWei(2000), { value: toWei(1000) });
-  
-      const tokenReserve = await exchange.getReserve();
-      const etherReserve = await getBalance(exchange.address);
-  
-      // ETH per token
-      expect(
-        (await exchange.getPrice(etherReserve, tokenReserve)).toString()
-      ).to.eq("0.5");
-  
-      // token per ETH
-      expect(await exchange.getPrice(tokenReserve, etherReserve)).to.eq(2);
+
+      let ethOut = await exchange.getEthAmount(toWei(2));
+      expect(fromWei(ethOut)).to.equal("0.999000999000999");
     });
   });
 })
