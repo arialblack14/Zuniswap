@@ -47,7 +47,12 @@ contract Exchange is ERC20 {
         uint256 outputReserve
     )   private pure returns(uint256) {
         require(inputReserve > 0 && outputReserve > 0, "Invalid reserves");
-        return (inputAmount * outputReserve)/ (inputAmount + inputReserve);
+        uint256 inputAmountWithFee = inputAmount * 99;
+        uint256 numerator = inputAmountWithFee * outputReserve;
+        uint256 denominator = (inputReserve * 100) + inputAmountWithFee;
+
+        // return (inputAmount * outputReserve)/ (inputAmount + inputReserve);
+        return numerator / denominator; // This is how we take the 1% fee from inputAmount
     } 
 
     function getTokenAmount(uint256 _ethSold) public view returns (uint256) {
