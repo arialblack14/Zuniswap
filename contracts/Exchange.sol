@@ -15,6 +15,11 @@ contract Exchange is ERC20 {
         if (getReserve() == 0) {
             IERC20 token = IERC20(tokenAddress);
             token.transferFrom(msg.sender, address(this), _tokenAmount);
+
+            uint256 liquidity = address(this).balance;
+            _mint(msg.sender, liquidity);
+
+            return liquidity;
         } else {
             uint256 ethReserve = address(this).balance - msg.value;
             uint256 tokenReserve = getReserve();
@@ -22,7 +27,12 @@ contract Exchange is ERC20 {
             require(_tokenAmount >= tokenAmount, "Insufficient token amount");
 
             IERC20 token = IERC20(tokenAddress);
-            token.transferFrom(msg.sender, address(this), tokenAmount);
+            token.transferFrom(msg.sender, address(this), tokenAmount); // Slippage
+
+            uint256 liquidity = (totalSupply() * msg.value) / ethReserve;
+            _mint(msg.sender, liquidity);
+
+            return liquidity;
         }
         
     }
