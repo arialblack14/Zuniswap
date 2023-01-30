@@ -2,10 +2,10 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Exchange {
+contract Exchange is ERC20 {
     address public tokenAddress;
 
-    constructor(address _token) {
+    constructor(address _token) ERC20("Zuniswap-V1", "ZUNI-V1") {
         require(_token != address(0), "Invalid token address");
 
         tokenAddress = _token;
